@@ -26,7 +26,7 @@ module ALU_microprocessor (
   input      [31:0]   in_2      ,
   input               alu_clk   ,
   output reg [31:0]   alu_rslt  ,
-  output     [ 3:0]   alu_checks            // Flag values
+  output     [ 4:0]   alu_checks            // Flag values
 );
 
 reg             N;                          // Sign bit     (to see if result is negative(1) or not(0))
