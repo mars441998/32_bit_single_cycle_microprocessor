@@ -3,20 +3,22 @@
 // Company       : Self-made
 // Engineer      : Muhammad Abdur-Rehman Siddiqui
 //
-// Create Date   : 15:54:41 12/06/2020
-// Design Name   :
+// Create Date   : 15:54:41 06/12/2020
+// Design Name   : 16-bit Advanced Microprocessor Design 
 // Module Name   : ALU_microprocessor
 // Project Name  : Single cycle 16-bit ARM Microprocessor
-// Target Devices:
+// Target Devices: Any FPGA family
 // Tool versions : ISE Design Suite 14.7
 // Description   : ALU module for the processor
 //
-// Dependencies:
+// Dependencies  : None
 //
-// Revision:
+// Revision      : 0.1
 // Revision 0.01 - File Created
 // Additional Comments:
 //
+// An advanced working ALU module which can perform several mathematical and
+// logical operations on the operands
 //////////////////////////////////////////////////////////////////////////////////
 module ALU_microprocessor (
   input      [ 3:0]   alu_ctrl  ,
@@ -24,10 +26,13 @@ module ALU_microprocessor (
   input      [31:0]   in_2      ,
   input               alu_clk   ,
   output reg [31:0]   alu_rslt  ,
-  output     [ 3:0]   alu_checks
+  output     [ 3:0]   alu_checks          // Flag values
 );
 
-reg             N,Z,C,V;
+reg             N;                        // Sign bit     (to see if result is negative or not)
+reg             Z;                        // Zero bit     (to see if result is zero or not)
+reg             C;                        // Carry bit    (to see if result generates carry)
+reg             V;                        // Overflow bit (to see if overflow occurs or not)
 
 always @(posedge alu_clk) begin
   case(alu_ctrl)
@@ -110,13 +115,45 @@ always @(posedge alu_clk) begin
       C        = 0;    // Don't care
     end
 
-    default:  begin                       //In default case, everything should be zero
+    4'b1010:  begin
+      alu_rslt = in_1<<1;                   // Left shift operation on first input
+      Z        = (alu_rslt==32'b0);
+      N        = alu_rslt[31];
+      V        = 0;    
+      C        = alu_rslt[31];
+    end
+
+    4'b1011:  begin
+      alu_rslt = in_2<<1;                   // Left shift operation on second input
+      Z        = (alu_rslt==32'b0);
+      N        = alu_rslt[31];
+      V        = 0;    
+      C        = alu_rslt[31];
+    end
+
+    4'b1100:  begin
+      alu_rslt = in_1>>1;                   // Right shift operation on first input
+      Z        = (alu_rslt==32'b0);
+      N        = alu_rslt[31];
+      V        = 0;    
+      C        = alu_rslt[0];
+    end
+
+    4'b1101:  begin
+      alu_rslt = in_1>>1;                   // Right shift operation on second input
+      Z        = (alu_rslt==32'b0);
+      N        = alu_rslt[31];
+      V        = 0;    
+      C        = alu_rslt[0];
+    end    
+
+    default:  begin                         // In default case, everything should be zero
       alu_rslt = 0; 
-      {N,Z,C,V}= 4'b0100; 
+      {N,Z,C,V}= 4'b0100;                   // Zero flag bit should be 1 to indicate the default case
     end
   endcase //case structure
 end //always block
 
-assign alu_checks = {N,Z,C,V};           // Flag for controlling values
+assign alu_checks = {V,Z,C,N};              // Assigning Flag values to alu_checks
 
 endmodule //ALU_microprocessor
