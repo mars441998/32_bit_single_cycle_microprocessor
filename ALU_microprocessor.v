@@ -179,7 +179,7 @@ always @(posedge alu_clk) begin
     end
 
     5'd14:  begin  
-      alu_rslt = !in_1;                     // NOT operation on first input
+      alu_rslt = ~in_1;                     // NOT operation on first input
       Z        = (alu_rslt==32'b0);
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
@@ -188,7 +188,7 @@ always @(posedge alu_clk) begin
     end
 
     5'd15:  begin  
-      alu_rslt = !in_2;                     // NOT operation on second input
+      alu_rslt = ~in_2;                     // NOT operation on second input
       Z        = (alu_rslt==32'b0);
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
@@ -275,6 +275,6 @@ always @(posedge alu_clk) begin
   endcase //case structure
 end //always block
 
-assign alu_checks = {V,Z,C,N};              // Assigning Flag values to alu_checks
+assign alu_checks = {P,V,Z,C,N};              // Assigning Flag values to alu_checks
 
 endmodule //ALU_microprocessor
