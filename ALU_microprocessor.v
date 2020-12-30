@@ -29,27 +29,29 @@ module ALU_microprocessor (
   output     [ 3:0]   alu_checks            // Flag values
 );
 
-reg             N;                          // Sign bit     (to see if result is negative or not)
-reg             Z;                          // Zero bit     (to see if result is zero or not)
-reg             C;                          // Carry bit    (to see if result generates carry)
-reg             V;                          // Overflow bit (to see if overflow occurs or not)
-
-always @(posedge alu_clk) begin
-  case(alu_ctrl)
+reg             N;                          // Sign bit     (to see if result is negative(1) or not(0))
+reg             Z;                          // Zero bit     (to see if result is zero(1) or not(0))
+reg             C;                          // Carry bit    (to see if result generates carry(1) or not(0))
+reg             V;                          // Overflow bit (to see if overflow occurs(1) or not(0))
+reg             P;                          // Parity bit   (to see if odd parity exists(1) or not(0))
 
 /* 
    ==============================================================================================
                            ARITHMETIC OPERATIONS FOR THE ALU DESIGN
-                In arithmetic operations, flag bits have greater effect by the 
+                  In arithmetic operations, flag bits greatly effect by the 
                                     results generated 
    ==============================================================================================
 */
+
+always @(posedge alu_clk) begin
+  case(alu_ctrl)
 
     5'd0 :  begin   
       {C,alu_rslt} = in_1 + in_2;           // ADD operation
       Z            = (alu_rslt==32'b0);
       N            = alu_rslt[31];
       V            = in_1[31]&&(in_2[31])&&(!alu_rslt[31]) || (!in_1[31])&&(!in_2[31])&&alu_rslt[31];
+      P            = ^alu_rslt;
     end
 
     5'd1 :  begin   
@@ -58,6 +60,7 @@ always @(posedge alu_clk) begin
       Z            = (alu_rslt==32'b0);
       N            = alu_rslt[31];
       V            = in_1[31]&&(!in_2[31])&&(!alu_rslt[31]) || (!in_1[31])&&(in_2[31])&&alu_rslt[31];
+      P            = ^alu_rslt;
     end
 
     5'd2 :  begin
@@ -66,6 +69,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;    
       C        = 0;
+      P        = ^alu_rslt;
     end
 
      5'd3 :  begin
@@ -74,20 +78,23 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;    
       C        = 0;
+      P        = ^alu_rslt;
     end
 
      5'd4 :  begin
       {C,alu_rslt} = in_1 + 1;              // Incrementing first input by 1
       Z        = (alu_rslt==32'b0);
       N        = alu_rslt[31];
-      V        = 0;    
+      V        = 0;
+      P        = ^alu_rslt;    
     end
 
     5'd5 :  begin
       {C,alu_rslt} = in_2 + 1;              // Incrementing second input by 1
       Z        = (alu_rslt==32'b0);
       N        = alu_rslt[31];
-      V        = 0;    
+      V        = 0;   
+      P        = ^alu_rslt; 
     end
 
     5'd6 :  begin
@@ -96,6 +103,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;    
       C        = alu_rslt[31];
+      P        = ^alu_rslt;
     end
 
     5'd7 :  begin
@@ -104,6 +112,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;    
       C        = alu_rslt[31];
+      P        = ^alu_rslt;
     end
 
 
@@ -121,6 +130,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       C        = 0;                         // Don't care
       V        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd9 :  begin  
@@ -129,6 +139,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd10:  begin  
@@ -137,6 +148,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd11:  begin  
@@ -145,6 +157,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd12:  begin  
@@ -153,6 +166,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd13:  begin  
@@ -161,6 +175,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd14:  begin  
@@ -169,6 +184,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd15:  begin  
@@ -177,6 +193,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd16:  begin
@@ -185,6 +202,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = alu_rslt[31];
+      P        = ^alu_rslt;
     end
 
     5'd17:  begin
@@ -193,6 +211,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = alu_rslt[31];
+      P        = ^alu_rslt;
     end
 
     5'd18:  begin
@@ -201,6 +220,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = alu_rslt[0];
+      P        = ^alu_rslt;
     end
 
     5'd19:  begin
@@ -209,6 +229,7 @@ always @(posedge alu_clk) begin
       N        = alu_rslt[31];
       V        = 0;                         // Don't care
       C        = alu_rslt[0];
+      P        = ^alu_rslt;
     end
 
     5'd20:  begin
@@ -217,6 +238,7 @@ always @(posedge alu_clk) begin
       N        = 0;                         // Don't care
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd21:  begin
@@ -225,6 +247,7 @@ always @(posedge alu_clk) begin
       N        = 0;                         // Don't care
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd22:  begin
@@ -233,6 +256,7 @@ always @(posedge alu_clk) begin
       N        = 0;                         // Don't care
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     5'd23:  begin
@@ -241,11 +265,12 @@ always @(posedge alu_clk) begin
       N        = 0;                         // Don't care
       V        = 0;                         // Don't care
       C        = 0;                         // Don't care
+      P        = ^alu_rslt;
     end
 
     default:  begin                         // In default case, everything should be zero
       alu_rslt = 0; 
-      {N,Z,C,V}= 4'b0100;                   // Zero flag bit should be 1 to indicate the default case
+      {P,N,Z,C,V}= 5'b00100;                   // Zero flag bit should be 1 to indicate the default case
     end
   endcase //case structure
 end //always block
